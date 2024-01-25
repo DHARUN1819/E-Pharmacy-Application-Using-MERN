@@ -30,6 +30,6 @@
     "nodemon": "^2.0.20",
     "react-icons": "^4.7.1",
     "slugify": "^1.6.5",
-    "socket.io": "^4.7.4"
+    
   }
 }
