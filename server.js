@@ -22,7 +22,7 @@ const __dirname =path.dirname(__filename);
 
 //rest object
 const app = express();
- I
+
  
 
 //middelwares
