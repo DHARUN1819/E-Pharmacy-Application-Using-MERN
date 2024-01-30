@@ -9,15 +9,15 @@ import {
   uploadPrescriptionWithUserInfo,
 } from '../controllers/prescriptionController.js';
 import { requireSignIn } from '../middlewares/authMiddleware.js';
+import formidable from "express-formidable";
 
 const router = express.Router();
 
 // Set up multer storage for image upload
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+
 
 // Prescription image upload route with user information
-router.post('/upload', upload.single('photo'), uploadPrescriptionWithUserInfo);
+router.post('/upload',requireSignIn,formidable(),uploadPrescriptionWithUserInfo);
 
 // Get all prescription route
 router.get('/list', getPrescription);

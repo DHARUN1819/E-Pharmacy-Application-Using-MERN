@@ -1,5 +1,5 @@
 // controllers/prescriptionController.js
-
+import fs from 'fs';
 import Prescription from '../models/prescriptionModel.js';
 
 export const getPrescription = async (req, res) => {
@@ -39,32 +39,47 @@ export const prescriptionPhotoController = async (req, res) => {
   }
 };
 
+
 export const uploadPrescriptionWithUserInfo = async (req, res) => {
   try {
-    const { name, phone, address } = req.body;
+    const { name, phone, address } = req.fields;
+    const { photo } = req.files;
 
     // Validate that the required fields are present
-    if (!name || !phone || !address || !req.file) {
-      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    switch (true) {
+      case !name:
+        return res.status(400).json({ success: false, error: 'Name is required' });
+      case !phone:
+        return res.status(400).json({ success: false, error: 'Phone is required' });
+      case !address:
+        return res.status(400).json({ success: false, error: 'Address is required' });
+      case photo && photo.size > 1000000:
+        return res
+          .status(500)
+          .send({ error: "photo is Required and should be less then 1mb" });
     }
 
-    // Create a new prescription document in MongoDB
     const newPrescription = new Prescription({
-      name,
-      phone,
-      address,
-      photo: {
-        data: req.file.buffer, // Buffer containing the image data
-        contentType: req.file.mimetype, // MIME type of the image
-      },
+     ...req.fields
     });
 
-    // Save the prescription document
+    // If a photo is provided, set the photo data and content type
+    if (photo) {
+      newPrescription.photo.data = fs.readFileSync(photo.path);
+      newPrescription.photo.contentType =photo.type;
+    }
+
     await newPrescription.save();
 
-    res.status(200).send({ success: true, message: 'Prescription and user information uploaded successfully' });
+    res.status(201).send({ success: true,
+       message: 'Prescription uploaded successfully',
+       newPrescription });
   } catch (error) {
-    console.error('Error uploading prescription and user information:', error);
-    res.status(500).send({ success: false, error: 'Internal server error' });
+    console.error(error);
+    res.status(500).send({ 
+      success: false,
+      error,
+      message: 'Internal server error' });
   }
 };
+
