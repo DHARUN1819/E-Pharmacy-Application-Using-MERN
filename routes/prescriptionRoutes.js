@@ -1,8 +1,6 @@
 // routes/prescriptionRoutes.js
 
 import express from 'express';
-import multer from 'multer';
-import Prescription from '../models/prescriptionModel.js';
 import {
   getPrescription,
   prescriptionPhotoController,
