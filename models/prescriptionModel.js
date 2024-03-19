@@ -18,6 +18,11 @@ const prescriptionSchema = new mongoose.Schema(
       data: Buffer,
       contentType: String,
     },
+    createdAt: { 
+      type: Date,
+      expires: 86400,
+      default: Date.now
+    }
   },
   { timestamps: true }
 );

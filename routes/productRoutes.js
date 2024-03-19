@@ -14,6 +14,8 @@ import {
   realtedProductController,
   searchProductController,
   updateProductController,
+  addReviewController,
+  getUserReview,
   
   
 } from "../controllers/productController.js";
@@ -77,6 +79,12 @@ router.get("/braintree/token", braintreeTokenController);
 //payments
 router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
 //reviews
+
+
+router.post("/add-review", requireSignIn, addReviewController);
+
+router.get("/user-review",getUserReview)
+
 
 
 export default router;

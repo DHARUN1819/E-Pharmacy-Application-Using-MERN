@@ -1,6 +1,8 @@
 import productModel from "../models/productModel.js";
 import categoryModel from "../models/categoryModel.js";
 import orderModel from "../models/orderModel.js";
+import reviewModel from "../models/reviewModel.js";
+import userModel from "../models/userModel.js";
 
 import fs from "fs";
 import slugify from "slugify";
@@ -380,3 +382,60 @@ export const brainTreePaymentController = async (req, res) => {
 
 // Add the function to handle adding reviews
 
+export const addReviewController = async (req, res) => {
+  try {
+    const {productId,rating,review} = req.body;
+  
+    // Validate if all required fields are present
+    if (!productId || !rating || !review) {
+      return res.status(400).send({ error: "productId, rating, and reviewText are required" });
+    }
+    const existingReview = await reviewModel.findOne({ productId, userId: req.user._id });
+    if (existingReview) {
+      return res.status(400).send({ error: "You have already submitted a review for this product" });
+    }
+
+    // Assuming you have a Review model, you can create a new review object
+    const reviewData = {
+      productId,
+      rating,
+      review,
+      userId: req.user._id, // Assuming you have user authentication middleware
+    };
+
+    // Save the review to the database
+    const newReview = await reviewModel.create(reviewData);
+
+    res.status(201).send({
+      success: true,
+      message: "Review added successfully",
+      review: newReview,
+    });
+  } catch (error) {
+    console.error("Error adding review:", error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: "Error in adding review",
+    });
+  }
+};
+export const getUserReview = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const userId = req.user._id; // Assuming you have user authentication middleware
+
+    // Check if the user has already submitted a review for the product
+    const existingReview = await Review.findOne({ productId, userId });
+
+    // Return the existing review data if found
+    if (existingReview) {
+      return res.status(200).json({ review: existingReview });
+    } else {
+      return res.status(404).json({ message: "User has not submitted a review for this product" });
+    }
+  } catch (error) {
+    console.error("Error fetching user review:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

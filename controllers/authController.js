@@ -255,3 +255,23 @@ export const orderStatusController = async (req, res) => {
     });
   }
 };
+export const validateUserNameController = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).send({ message: "User name is required" });
+    }
+
+    const existingUser = await userModel.findOne({ name });
+
+    if (existingUser) {
+      return res.json({ valid: true }); // User name exists
+    } else {
+      return res.json({ valid: false }); // User name does not exist
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};

@@ -8,6 +8,7 @@ import {
   getOrdersController,
   getAllOrdersController,
   orderStatusController,
+  validateUserNameController,
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -52,5 +53,7 @@ router.put(
   isAdmin,
   orderStatusController
 );
+router.post("/validateUserName", validateUserNameController);
+
 
 export default router;
